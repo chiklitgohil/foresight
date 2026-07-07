@@ -217,5 +217,17 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Project generated outputs
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+models/*.joblib
+models/*.onnx
+
+# Local-only reference material
 /notes
-/data
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
