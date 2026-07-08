@@ -2,9 +2,33 @@
 
 **Predicting critical factory machine failures using synthetic telemetry data to reduce unplanned downtime.**
 
+🚀 **[View the Live Real-Time Dashboard Demo Here!](https://foresight-5pld.onrender.com)** 🚀
+
 ---
 
-## 1. Problem Statement
+## 1. Live Dashboard & Fleet Monitoring
+The Foresight platform features a real-time streaming dashboard for factory floor operators, actively monitoring machine health and raising alarms before a catastrophic breakdown occurs.
+
+### Single-Machine Operator View
+Operators can instantly test the telemetry of any machine and receive a categorized Risk Band (Low, Medium, High).
+
+#### 🟢 Low Risk: System Healthy
+![Low Risk](assets/Low%20risk%20demo.jpg)
+
+#### 🟡 Medium Risk: Action Recommended
+![Medium Risk](assets/Medium%20risk%20demo.jpg)
+
+#### 🔴 High Risk: Maintenance Required
+![High Risk](assets/High%20Risk%20demo.jpg)
+
+### Fleet-Wide Heatmap
+Factory managers can view a real-time, bird's-eye view of all active machines in the facility. The heatmap pulses red when any machine in the fleet crosses the critical probability threshold, allowing for instant triage.
+
+![Fleet Heatmap](assets/Factory%20heatmap%20demo.jpg)
+
+---
+
+## 2. Problem Statement
 
 In modern manufacturing, unexpected machine failures cause massive production delays, cascading supply chain disruptions, and millions of dollars in lost revenue. Traditional "preventative" maintenance relies on fixed schedules (e.g., replacing a part every 5,000 hours), which either replaces healthy parts too early (wasting money) or catches failures too late (causing downtime).
 
@@ -13,7 +37,7 @@ In modern manufacturing, unexpected machine failures cause massive production de
 
 ---
 
-## 2. Dataset Overview
+## 3. Dataset Overview
 
 We are using the **AI4I 2020 Predictive Maintenance Dataset** (UCI Machine Learning Repository).
 
@@ -24,7 +48,7 @@ We are using the **AI4I 2020 Predictive Maintenance Dataset** (UCI Machine Learn
 
 ---
 
-## 3. Exploratory Data Analysis
+## 4. Exploratory Data Analysis
 
 Before modeling, we explored the raw dataset to understand the feature distributions and underlying correlations.
 
@@ -50,7 +74,7 @@ As expected for industrial data, failures are rare. If a naive model always pred
 
 ---
 
-## 4. Modeling Approach
+## 5. Modeling Approach
 
 Because we are predicting rare failures, standard Accuracy is a misleading metric. We evaluated models strictly on **Recall**, **F1 Score**, and **PR-AUC (Precision-Recall Area Under Curve)**.
 
@@ -72,7 +96,7 @@ This combined plot demonstrates exactly why **Gradient Boosting** was selected. 
 
 ---
 
-## 5. Final Model Performance
+## 6. Final Model Performance
 
 The final model deployed is the **Gradient Boosting Classifier**, fully hyperparameter-tuned via GridSearchCV to maximize Recall.
 
@@ -90,7 +114,7 @@ Our final model on the test set. Notice the extremely low False Negative rate (t
 
 ---
 
-## 6. Model Explainability (SHAP)
+## 7. Model Explainability (SHAP)
 
 To build trust with factory operators, the dashboard must explain _why_ it predicts a failure. We use SHAP (SHapley Additive exPlanations) values to interpret the Gradient Boosting model.
 
@@ -106,7 +130,7 @@ When a specific machine is flagged for a failure, the SHAP Waterfall Plot breaks
 
 ---
 
-## 7. How to Reproduce
+## 8. How to Reproduce
 
 The entire modeling pipeline is documented and executed in Jupyter Notebooks.
 
@@ -126,7 +150,7 @@ The entire modeling pipeline is documented and executed in Jupyter Notebooks.
 
 ---
 
-## 8. Project Structure
+## 9. Project Structure
 
 ```text
 foresight/
