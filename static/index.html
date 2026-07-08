@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foresight Operator Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="glass-panel">
+            <div class="logo">FORESIGHT<span>.AI</span></div>
+            <div class="header-status">
+                <span id="latency-display">Latency: -- ms</span>
+                <button id="sim-btn" class="glow-btn">Start Simulation</button>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="grid-layout">
+            
+            <!-- Telemetry Input Panel -->
+            <section class="glass-panel telemetry-panel">
+                <h2>Live Telemetry</h2>
+                <form id="telemetry-form">
+                    <div class="input-group">
+                        <label>Product ID</label>
+                        <input type="text" id="product_id" value="N/A (Manual)" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label>Machine Type</label>
+                        <select id="machine_type">
+                            <option value="L">L (Low)</option>
+                            <option value="M">M (Medium)</option>
+                            <option value="H">H (High)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Air Temp [K]</label>
+                        <input type="number" step="0.1" id="air_temp" value="298.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Process Temp [K]</label>
+                        <input type="number" step="0.1" id="process_temp" value="308.6">
+                    </div>
+                    <div class="input-group">
+                        <label>Rotational Speed [RPM]</label>
+                        <input type="number" id="rpm" value="1551">
+                    </div>
+                    <div class="input-group">
+                        <label>Torque [Nm]</label>
+                        <input type="number" step="0.1" id="torque" value="42.8">
+                    </div>
+                    <div class="input-group">
+                        <label>Tool Wear [min]</label>
+                        <input type="number" id="tool_wear" value="0">
+                    </div>
+                    <!-- Hidden true failure mode for logging -->
+                    <input type="hidden" id="true_failure_mode" value="None">
+                    
+                    <button type="button" id="predict-btn" class="glow-btn">Run Analysis</button>
+                </form>
+            </section>
+
+            <!-- Status Output Panel -->
+            <section class="glass-panel status-panel">
+                <h2>System Health</h2>
+                
+                <div class="status-circle" id="status-circle">
+                    <div class="status-inner">
+                        <h3 id="risk-text">PENDING</h3>
+                    </div>
+                </div>
+
+                <div class="recommendation-box" id="rec-box">
+                    <h4>Action Required</h4>
+                    <p id="rec-text">Waiting for telemetry data...</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Incident Log -->
+        <section class="glass-panel incident-log">
+            <h2>Incident History</h2>
+            <div class="table-container">
+                <table id="log-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Product ID</th>
+                            <th>Risk Level</th>
+                            <th>True Failure Mode</th>
+                            <th>Action Taken</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-body">
+                        <!-- Rows dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
