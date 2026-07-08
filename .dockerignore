@@ -7,4 +7,3 @@ __pycache__/
 # Exclude training assets and notebooks from the production container
 notebooks/
 assets/
-data/raw/
