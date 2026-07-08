@@ -16,7 +16,8 @@ from predict import predict_risk_band
 app = FastAPI(title="Foresight Factory Dashboard API")
 
 # Serve static files for the frontend
-app.mount("/static", StaticFiles(directory="static"), name="static")
+static_dir = root_dir / "static"
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 # Load raw dataset for streaming simulation
 raw_data_path = root_dir / "data" / "raw" / "ai4i2020.csv"
@@ -98,7 +99,46 @@ async def stream_data():
         "true_failure_mode": true_mode
     }
 
+@app.get("/api/fleet")
+async def fleet_data():
+    """
+    Returns predictions for 100 random machines to populate the fleet heatmap.
+    """
+    if df_raw is None:
+        return {"error": "Raw data not loaded"}
+        
+    # Sample 100 rows (bias slightly to have a few failures so it looks good)
+    failures = df_raw[df_raw["Machine failure"] == 1].sample(5, replace=True)
+    healthy = df_raw[df_raw["Machine failure"] == 0].sample(95, replace=True)
+    sample_df = pd.concat([failures, healthy]).sample(frac=1) # Shuffle
+    
+    model_path = root_dir / "model" / "sentinel_model.joblib"
+    try:
+        bands, _ = predict_risk_band(sample_df, model_path)
+        
+        fleet = []
+        for i, (_, row) in enumerate(sample_df.iterrows()):
+            risk_str = bands[i]
+            risk_level = risk_str.split(" -> ")[0]
+            
+            fleet.append({
+                "product_id": row["Product ID"],
+                "machine_type": row["Type"],
+                "risk_level": risk_level
+            })
+            
+        return {"fleet": fleet}
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/", response_class=HTMLResponse)
 async def serve_dashboard():
-    with open("static/index.html", "r") as f:
-        return f.read()
+    html_path = root_dir / "static" / "index.html"
+    with open(html_path, "r") as f:
+        return HTMLResponse(content=f.read())
+
+@app.get("/heatmap", response_class=HTMLResponse)
+async def serve_heatmap():
+    html_path = root_dir / "static" / "heatmap.html"
+    with open(html_path, "r") as f:
+        return HTMLResponse(content=f.read())
