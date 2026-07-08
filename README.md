@@ -42,7 +42,9 @@ _(Note: In a true production environment, this dashboard would map directly to t
 
 ---
 
-## 2. Problem Statement
+## 2. Problem Statement (Challenge #4)
+
+*(This project was explicitly built to solve **Problem Statement 4** of the hackathon).*
 
 In modern manufacturing, unexpected machine failures cause massive production delays, cascading supply chain disruptions, and millions of dollars in lost revenue. Traditional "preventative" maintenance relies on fixed schedules (e.g., replacing a part every 5,000 hours), which either replaces healthy parts too early (wasting money) or catches failures too late (causing downtime).
 
