@@ -1,35 +1,39 @@
-"""Centralizes constants such as file paths, random seed `42`, sensor column names, leakage columns, 50-cycle prediction horizon, 10/50-cycle feature windows, and Green/Amber/Red thresholds for reuse by all pipeline scripts."""
-
-from __future__ import annotations
-
+import os
 from pathlib import Path
 
-
-ROOT_DIR = Path(__file__).resolve().parents[1]
-RAW_DATA_PATH = ROOT_DIR / "data" / "raw" / "ai4i2020.csv"
-PROCESSED_DIR = ROOT_DIR / "data" / "processed"
+# Paths
+ROOT_DIR = Path(__file__).resolve().parent.parent
+DATA_RAW_DIR = ROOT_DIR / "data" / "raw"
+DATA_PROCESSED_DIR = ROOT_DIR / "data" / "processed"
 MODELS_DIR = ROOT_DIR / "models"
 
+# Pipeline constants
 RANDOM_SEED = 42
-PREDICTION_HORIZON_CYCLES = 50
+PREDICTION_HORIZON_CYCLES = 10
 ROLLING_WINDOWS = (10, 50)
 
+# Column groups
 TARGET_COLUMN = "Machine failure"
 ID_COLUMNS = ["UDI", "Product ID"]
 FAILURE_MODE_COLUMNS = ["TWF", "HDF", "PWF", "OSF", "RNF"]
-LEAKAGE_COLUMNS = [*ID_COLUMNS, *FAILURE_MODE_COLUMNS]
+LEAKAGE_COLUMNS = ID_COLUMNS + FAILURE_MODE_COLUMNS
+
 SENSOR_COLUMNS = [
     "Air temperature [K]",
     "Process temperature [K]",
     "Rotational speed [rpm]",
     "Torque [Nm]",
-    "Tool wear [min]",
+    "Tool wear [min]"
 ]
-BASE_FEATURE_COLUMNS = ["Type", *SENSOR_COLUMNS]
-EXPECTED_COLUMNS = [*ID_COLUMNS, "Type", *SENSOR_COLUMNS, TARGET_COLUMN, *FAILURE_MODE_COLUMNS]
+BASE_FEATURE_COLUMNS = ["Type"] + SENSOR_COLUMNS
+EXPECTED_COLUMNS = ID_COLUMNS + BASE_FEATURE_COLUMNS + [TARGET_COLUMN] + FAILURE_MODE_COLUMNS
 
-GREEN_MAX = 0.30
-AMBER_MAX = 0.60
+# Split fractions
 TRAIN_FRACTION = 0.70
 VALIDATION_FRACTION = 0.15
 TEST_FRACTION = 0.15
+
+# Evaluation
+RECALL_FLOOR = 0.80
+AMBER_PRECISION_FLOOR = 0.20
+RED_PRECISION_FLOOR = 0.45

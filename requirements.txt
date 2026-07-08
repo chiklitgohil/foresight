@@ -6,3 +6,4 @@ seaborn==0.13.2
 imbalanced-learn==0.14.0
 joblib==1.5.3
 dash==4.4.0
+xgboost==2.1.3

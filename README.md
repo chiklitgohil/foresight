@@ -73,3 +73,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The system loads AI4I raw data
 ## License
 
 <!-- fill repository license and dataset license summary -->
+## Assumptions and Limitations
+
+1. We assume UDI ordered rows represent contiguous temporal operational cycles for feature building and targets, since the dataset lacks real timestamps.
+2. We assume FFT components computed over the past 50 rows on torque/speed serve as a proxy for vibration regimes, because the AI4I dataset contains no genuine vibration sensor channel.

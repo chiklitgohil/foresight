@@ -1,8 +1,13 @@
-"""Takes an internal model probability as input and outputs the PRD-defined risk band and recommended action using Green `<0.30`, Amber `0.30-<0.60`, and Red `>=0.60`."""
+from src import config
 
-from __future__ import annotations
-
-
-def assign_risk_band(risk_score: float) -> tuple[str, str]:
-    """Take a probability from 0.0 to 1.0 and return risk_band plus recommended_action."""
-    raise NotImplementedError
+def get_risk_band(probability: float, amber_threshold: float, red_threshold: float) -> tuple[str, str]:
+    """
+    Classifies a failure probability into a risk band using dynamic thresholds.
+    Returns (Band Name, Recommended Action).
+    """
+    if probability < amber_threshold:
+        return "green", "Normal operation"
+    elif probability < red_threshold:
+        return "amber", "Schedule inspection within 2 days"
+    else:
+        return "red", "Immediate inspection, stop the machine"

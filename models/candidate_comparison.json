@@ -1,0 +1,38 @@
+{
+  "Logistic Regression (Balanced)": {
+    "reached_floors": true,
+    "amber_threshold": 0.11,
+    "amber_precision": 0.20492524186455585,
+    "amber_recall": 0.8661710037174721,
+    "red_threshold": 0.37,
+    "red_precision": 0.4518950437317784,
+    "red_recall": 0.5762081784386617
+  },
+  "Random Forest (Regularized)": {
+    "reached_floors": true,
+    "amber_threshold": 0.21,
+    "amber_precision": 0.2,
+    "amber_recall": 0.8252788104089219,
+    "red_threshold": 0.34,
+    "red_precision": 0.4567901234567901,
+    "red_recall": 0.6877323420074349
+  },
+  "XGBoost (Scale Pos Weight)": {
+    "reached_floors": true,
+    "amber_threshold": 0.01,
+    "amber_precision": 0.2295247724974722,
+    "amber_recall": 0.8438661710037175,
+    "red_threshold": 0.13,
+    "red_precision": 0.46475195822454307,
+    "red_recall": 0.6617100371747212
+  },
+  "SMOTE + Logistic Regression": {
+    "reached_floors": true,
+    "amber_threshold": 0.11,
+    "amber_precision": 0.20448430493273542,
+    "amber_recall": 0.8475836431226765,
+    "red_threshold": 0.38,
+    "red_precision": 0.45794392523364486,
+    "red_recall": 0.5464684014869888
+  }
+}
