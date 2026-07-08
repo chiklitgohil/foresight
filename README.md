@@ -3,6 +3,7 @@
 **Predicting critical factory machine failures using synthetic telemetry data to reduce unplanned downtime.**
 
 🚀 **[View the Live Real-Time Dashboard Demo Here!](https://foresight-5pld.onrender.com)** 🚀
+🎥 **[Watch the YouTube Video Presentation & Demo!](https://youtu.be/Z34ycdRBrwA)** 🎥
 
 ---
 
@@ -13,6 +14,12 @@ The Foresight platform features a real-time streaming dashboard for factory floo
 ### Single-Machine Operator View
 
 Operators can instantly test the telemetry of any machine and receive a categorized Risk Band (Low, Medium, High).
+
+**Under the Hood (Probability Mapping):** 
+While the model is trained as a binary classifier (0 or 1), it outputs a continuous probability score (confidence from 0% to 100%). We map this probability into actionable bands:
+* **High Risk (Probability ≥ 50%):** The model is mathematically confident a breakdown is imminent.
+* **Medium Risk (Probability 25% - 49%):** The "Warning Zone". The model lacks the statistical evidence for a full alarm, but the machine's thermodynamic sensors are behaving suspiciously and trending towards failure.
+* **Low Risk (Probability < 25%):** System is completely nominal.
 
 #### 🟢 Low Risk: System Healthy
 
@@ -29,6 +36,8 @@ Operators can instantly test the telemetry of any machine and receive a categori
 ### Fleet-Wide Heatmap
 
 Factory managers can view a real-time, bird's-eye view of all active machines in the facility. The heatmap pulses red when any machine in the fleet crosses the critical probability threshold, allowing for instant triage.
+
+_(Note: In a true production environment, this dashboard would map directly to the physical factory floor layout. Since spatial coordinates were not provided in the AI4I dataset, we have approximated the factory floor as a 10x10 grid for this demonstration)._
 
 ![Fleet Heatmap](assets/Factory%20heatmap%20demo.jpg)
 
@@ -68,10 +77,12 @@ The dataset is exceptionally clean and contained exactly zero missing values or 
 We plotted the KDE histograms of the primary features. Rotational Speed (RPM) and Torque exhibit long tails. Because tree-based models (like Random Forests and Gradient Boosting) are robust to outliers, we chose _not_ to clip or remove them, as "outlier" values often represent the extreme physics leading up to a failure.
 ![Distributions](assets/notebook_exports/01_EDA_and_Modeling_files/01_EDA_and_Modeling_7_0.png)
 
-### Correlations
+### Correlations & Feature Engineering (The Physics Insight)
 
-Torque and Rotational Speed are highly negatively correlated (-0.88), adhering to standard mechanical physics (Power = Torque × RPM).
+Torque and Rotational Speed are highly negatively correlated (-0.88), adhering to standard mechanical physics (`Power = Torque × (RPM × 2π / 60)`).
 ![Correlations](assets/notebook_exports/01_EDA_and_Modeling_files/01_EDA_and_Modeling_9_0.png)
+
+💡 **Insight:** The model only achieved its high accuracy because we explicitly engineered thermodynamic features like `Temp_Diff` (Process Temp - Air Temp) and Mechanical `Power`. This proves that injecting raw **domain knowledge** into the dataset is just as critical as the machine learning algorithm itself.
 
 ### Class Imbalance
 
@@ -117,6 +128,9 @@ Our final model on the test set. Notice the extremely low False Negative rate (t
 - **True Negatives (1,809):** Machine was healthy, and we correctly ignored it.
 - **False Positives (123):** Machine was healthy, but we triggered a False Alarm. (We accept these 15-minute unnecessary inspections to ensure we don't miss the catastrophic failures).
 
+💡 **Business Impact (ROI):** 
+Assuming a catastrophic machine failure costs $50,000 in 3-day downtime, and a false alarm inspection costs $100 in technician time. Because our model successfully catches 93% of failures, it saves the factory millions of dollars a year in averted disasters, making the cost of the 123 false alarms completely negligible.
+
 ![Confusion Matrix & PR Curve](assets/notebook_exports/03_Explainability_and_Export_files/03_Explainability_and_Export_6_1.png)
 
 ---
@@ -129,6 +143,9 @@ To build trust with factory operators, the dashboard must explain _why_ it predi
 
 The SHAP Summary Plot shows that high `Torque`, `Temp_Diff`, and `Tool wear` are the primary drivers pushing the model to predict a failure.
 ![SHAP Summary Plot](assets/notebook_exports/03_Explainability_and_Export_files/03_Explainability_and_Export_8_0.png)
+
+💡 **Hardware Insight (Sensor Prioritization):** 
+Because SHAP proves that `Torque` and `Tool Wear` are the strongest leading indicators of a machine breakdown, factory managers can use this AI to make hardware budget decisions. They should allocate funds to ensure the Torque sensors are the highest-quality and most frequently calibrated sensors on the factory floor.
 
 ### Local Explainability (Single Prediction)
 
