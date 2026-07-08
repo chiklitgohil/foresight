@@ -2,8 +2,7 @@
 
 **Predicting critical factory machine failures using synthetic telemetry data to reduce unplanned downtime.**
 
-🚀 **[View the Live Real-Time Dashboard Demo Here!](https://foresight-5pld.onrender.com)** 🚀
-🎥 **[Watch the YouTube Video Presentation & Demo!](https://youtu.be/Z34ycdRBrwA)** 🎥
+[Live Dashboard](https://foresight-5pld.onrender.com) • [Video Demo](https://youtu.be/Z34ycdRBrwA)
 
 ---
 
