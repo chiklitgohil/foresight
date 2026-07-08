@@ -1,79 +1,38 @@
-# SentinelPdM
+# Foresight
 
-Predictive maintenance for factory operators that turns machine sensor telemetry into early failure warnings, risk bands, and maintenance actions.
+Foresight is a predictive maintenance application for factory operators that turns machine sensor telemetry into early failure warnings, risk bands, and maintenance actions.
 
-## Problem
-
-SentinelPdM helps operators catch likely machine failures before reactive downtime, because missed failures carry much higher cost than false alarms: lost throughput, damaged equipment, scrap, and potential operator injury.
-
-<!-- fill after final demo script -->
-
-## Dataset
-
-- Name: AI4I 2020 Predictive Maintenance Dataset
-- Source: UCI Machine Learning Repository, https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset
-- License: Creative Commons Attribution 4.0 International (CC BY 4.0)
-
-<!-- fill after README dataset citation is finalized -->
+## Overview
+Foresight helps operators catch likely machine failures before reactive downtime. It uses a machine learning model to predict failure risk based on air/process temperature, rotational speed, torque, and tool wear.
 
 ## Setup
 
-```bash
-bash setup.sh
-```
-
-<!-- fill after confirming final supported shell/OS commands -->
-
-## Training
-
-<!-- fill after training pipeline exists -->
-
-Expected command:
+Ensure you have Python installed, then install the requirements:
 
 ```bash
-python -m src.train
+pip install -r requirements.txt
 ```
 
-## Inference
+## Running the Application
 
-<!-- fill after inference.py is implemented -->
+This repository has been simplified to make it easy to train and test the model in just two steps.
 
-Expected command/API:
+### 1. Train the Model
+
+Run the training script to load the AI4I dataset, build the pipeline, and save the model:
 
 ```bash
-python -m src.inference
+python src/train.py
 ```
 
-## Evaluation
+This will create a `foresight_model.joblib` artifact in the `models/` directory.
 
-See [RESULTS.md](RESULTS.md).
+### 2. Launch the Dashboard
 
-<!-- fill after training run with headline recall/precision numbers -->
-
-## Dashboard / Demo
-
-<!-- fill after dashboard/app.py is implemented -->
-
-Expected command:
+Once the model is trained, launch the interactive web dashboard to test the model:
 
 ```bash
-python -m dashboard.app
+python app.py
 ```
 
-## Architecture
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The system loads AI4I raw data, creates leakage-safe ordered pseudo-cycle splits, trains a class-weighted failure classifier, serves risk-banded inference events, and displays operator-safe actions through a simulated dashboard replay.
-
-<!-- fill after architecture changes, if any -->
-
-## Team
-
-<!-- fill team names and roles -->
-
-## License
-
-<!-- fill repository license and dataset license summary -->
-## Assumptions and Limitations
-
-1. We assume UDI ordered rows represent contiguous temporal operational cycles for feature building and targets, since the dataset lacks real timestamps.
-2. We assume FFT components computed over the past 50 rows on torque/speed serve as a proxy for vibration regimes, because the AI4I dataset contains no genuine vibration sensor channel.
+Open your browser to `http://127.0.0.1:8050/` to use the Foresight telemetry dashboard. You can input various sensor readings and see the predicted risk band (Green, Amber, or Red) in real-time.
