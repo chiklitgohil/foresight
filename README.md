@@ -7,21 +7,27 @@
 ---
 
 ## 1. Live Dashboard & Fleet Monitoring
+
 The Foresight platform features a real-time streaming dashboard for factory floor operators, actively monitoring machine health and raising alarms before a catastrophic breakdown occurs.
 
 ### Single-Machine Operator View
+
 Operators can instantly test the telemetry of any machine and receive a categorized Risk Band (Low, Medium, High).
 
 #### 🟢 Low Risk: System Healthy
+
 ![Low Risk](assets/Low%20risk%20demo.jpg)
 
 #### 🟡 Medium Risk: Action Recommended
+
 ![Medium Risk](assets/Medium%20risk%20demo.jpg)
 
 #### 🔴 High Risk: Maintenance Required
+
 ![High Risk](assets/High%20Risk%20demo.jpg)
 
 ### Fleet-Wide Heatmap
+
 Factory managers can view a real-time, bird's-eye view of all active machines in the facility. The heatmap pulses red when any machine in the fleet crosses the critical probability threshold, allowing for instant triage.
 
 ![Fleet Heatmap](assets/Factory%20heatmap%20demo.jpg)
@@ -39,7 +45,7 @@ In modern manufacturing, unexpected machine failures cause massive production de
 
 ## 3. Dataset Overview
 
-We are using the **AI4I 2020 Predictive Maintenance Dataset** (UCI Machine Learning Repository).
+We are using the **AI4I 2020 Predictive Maintenance Dataset** ([UCI Machine Learning Repository](http://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset)).
 
 - **Shape**: 10,000 rows, 14 columns.
 - **Nature**: Synthetic, designed to mimic true industrial telemetry without proprietary corporate constraints.
@@ -105,10 +111,11 @@ The final model deployed is the **Gradient Boosting Classifier**, fully hyperpar
 Our final model on the test set. Notice the extremely low False Negative rate (the worst-case scenario where a machine fails unexpectedly).
 
 **Real-World Breakdown on 2,000 Test Machines:**
-* **True Positives (63):** Machine failed, and we predicted it. (Caught the breakdown!)
-* **False Negatives (5):** Machine failed, but we missed it. (Only missed 5 out of 68 actual failures = **93% Recall**)
-* **True Negatives (1,809):** Machine was healthy, and we correctly ignored it.
-* **False Positives (123):** Machine was healthy, but we triggered a False Alarm. (We accept these 15-minute unnecessary inspections to ensure we don't miss the catastrophic failures).
+
+- **True Positives (63):** Machine failed, and we predicted it. (Caught the breakdown!)
+- **False Negatives (5):** Machine failed, but we missed it. (Only missed 5 out of 68 actual failures = **93% Recall**)
+- **True Negatives (1,809):** Machine was healthy, and we correctly ignored it.
+- **False Positives (123):** Machine was healthy, but we triggered a False Alarm. (We accept these 15-minute unnecessary inspections to ensure we don't miss the catastrophic failures).
 
 ![Confusion Matrix & PR Curve](assets/notebook_exports/03_Explainability_and_Export_files/03_Explainability_and_Export_6_1.png)
 
