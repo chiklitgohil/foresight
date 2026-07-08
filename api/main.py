@@ -47,7 +47,7 @@ async def predict(data: Telemetry):
         "Tool wear [min]": [data.tool_wear]
     })
     
-    model_path = root_dir / "model" / "sentinel_model.joblib"
+    model_path = root_dir / "model" / "foresight_model.joblib"
     try:
         bands, latency = predict_risk_band(df_input, model_path)
         risk_str = bands[0]
@@ -112,7 +112,7 @@ async def fleet_data():
     healthy = df_raw[df_raw["Machine failure"] == 0].sample(95, replace=True)
     sample_df = pd.concat([failures, healthy]).sample(frac=1) # Shuffle
     
-    model_path = root_dir / "model" / "sentinel_model.joblib"
+    model_path = root_dir / "model" / "foresight_model.joblib"
     try:
         bands, _ = predict_risk_band(sample_df, model_path)
         

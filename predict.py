@@ -1,61 +1,64 @@
-"""
-Inference Script
-Loads the trained model artifact, takes raw telemetry inputs, and outputs a risk band.
-Includes a latency benchmark for scoring.
-"""
-
 import sys
 import time
+import numpy as np
 from pathlib import Path
 import pandas as pd
 import joblib
 
 root_dir = Path(__file__).resolve().parent
-sys.path.append(str(root_dir))
-
-from features.engineer import build_features
 
 def predict_risk_band(input_data: pd.DataFrame, artifact_path: Path):
     """
-    Given raw input data (can be multiple rows, but typical use is 1 row),
-    outputs the risk band.
+    Given raw input data, outputs the risk band using the imblearn pipeline.
     """
-    # 1. Load artifact
-    artifact = joblib.load(artifact_path)
-    scaler = artifact["scaler"]
-    model = artifact["model"]
-    threshold = artifact["optimal_threshold"]
-    expected_features = artifact["features"]
+    # 1. Load pipeline artifact
+    pipeline = joblib.load(artifact_path)
     
-    # 2. Engineer features
-    # (Note: In a true streaming environment, rolling features require caching previous state.
-    # For this hackathon, we assume the input_data might contain a small buffer of history 
-    # if rolling features are needed, or we just compute on the available row which 
-    # degrades rolling stats to window=1 if only 1 row is passed. This is acceptable for demo.)
-    df_features = build_features(input_data)
+    # 2. Engineer features matching notebook 03 logic
+    df = input_data.copy()
     
-    # Ensure all expected columns are present (fill missing with 0 for dummy encoding robustness)
+    # Type One-hot encoding (L, M, H) - dummy logic
+    # In the notebook, 'Type_L' and 'Type_M' were created via drop_first=True
+    # Since we only get 1 row often, we must ensure columns exist manually
+    if 'Type' in df.columns:
+        df['Type_L'] = (df['Type'] == 'L').astype(int)
+        df['Type_M'] = (df['Type'] == 'M').astype(int)
+        df = df.drop(columns=['Type'])
+    
+    # Physics features
+    df["Temp_Diff"] = df["Process temperature [K]"] - df["Air temperature [K]"]
+    df["Power"] = df["Torque [Nm]"] * (df["Rotational speed [rpm]"] * 2 * np.pi / 60)
+    df["Tool_Wear_Rate"] = df["Tool wear [min]"] * df["Torque [Nm]"]
+    
+    # Ensure column order matches the training set exactly
+    expected_features = [
+        'Air temperature [K]', 'Process temperature [K]', 'Rotational speed [rpm]',
+        'Torque [Nm]', 'Tool wear [min]', 'Type_L', 'Type_M', 'Temp_Diff',
+        'Power', 'Tool_Wear_Rate'
+    ]
+    
     for col in expected_features:
-        if col not in df_features.columns:
-            df_features[col] = 0
+        if col not in df.columns:
+            df[col] = 0
             
-    X_input = df_features[expected_features]
+    X_input = df[expected_features]
     
-    # 3. Scale and predict
+    # 3. Predict probability using the full pipeline
     start_time = time.time()
-    X_scaled = scaler.transform(X_input)
-    probs = model.predict_proba(X_scaled)[:, 1]
-    
+    # The pipeline applies scaling internally
+    probs = pipeline.predict_proba(X_input)[:, 1]
     latency_ms = (time.time() - start_time) * 1000
     
     # 4. Apply threshold and risk bands
-    # Constraint: output a risk band (Low/Medium/High) rather than raw probability
+    # We use a default threshold of 0.5, or a tuned threshold if we knew it.
+    # In Notebook 03, we didn't tune threshold, we just used predict() which defaults to 0.5
+    threshold = 0.5 
+    
     results = []
     for p in probs:
         if p >= threshold:
             results.append("High Risk -> MAINTENANCE REQUIRED: Schedule immediate downtime for inspection/replacement")
         elif p >= (threshold * 0.5): 
-            # Simple heuristic for Medium risk
             results.append("Medium Risk -> ACTION RECOMMENDED: Inspect machine on next shift")
         else:
             results.append("Low Risk -> SYSTEM HEALTHY: Continue normal operations")
@@ -63,9 +66,8 @@ def predict_risk_band(input_data: pd.DataFrame, artifact_path: Path):
     return results, latency_ms
 
 if __name__ == "__main__":
-    model_path = root_dir / "model" / "sentinel_model.joblib"
+    model_path = root_dir / "model" / "foresight_model.joblib"
     
-    # Create a dummy row for testing
     dummy_input = pd.DataFrame({
         "Type": ["L"],
         "Air temperature [K]": [298.1],
@@ -76,10 +78,6 @@ if __name__ == "__main__":
     })
     
     print("Running inference benchmark...")
-    
-    try:
-        bands, latency = predict_risk_band(dummy_input, model_path)
-        print(f"Predicted Band: {bands[0]}")
-        print(f"Inference Latency: {latency:.2f} ms")
-    except FileNotFoundError:
-        print("Model artifact not found. Run train.py first.")
+    bands, latency = predict_risk_band(dummy_input, model_path)
+    print(f"Predicted Band: {bands[0]}")
+    print(f"Inference Latency: {latency:.2f} ms")
